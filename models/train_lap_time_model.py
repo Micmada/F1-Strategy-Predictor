@@ -1,39 +1,36 @@
 import pandas as pd
-from sklearn.model_selection import train_test_split
+import xgboost as xgb
 from sklearn.preprocessing import OneHotEncoder
-from xgboost import XGBRegressor
-from sklearn.compose import ColumnTransformer
-from sklearn.pipeline import Pipeline
 import joblib
+import numpy as np
 
 df = pd.read_csv("data/tyre_data_silverstone_2023.csv")
-
 df = df.dropna(subset=["LapTime", "TyreLife", "Compound", "LapNumber"])
 df["LapTime"] = pd.to_timedelta(df["LapTime"]).dt.total_seconds()
-
 df["Compound"] = df["Compound"].str.upper()
 
 X = df[["TyreLife", "Compound", "LapNumber"]]
-y = df["LapTime"]
+y = df["LapTime"].values
 
-categorical_features = ["Compound"]
-numeric_features = ["TyreLife", "LapNumber"]
+encoder = OneHotEncoder(sparse_output=False, handle_unknown='ignore')
+compound_encoded = encoder.fit_transform(X[["Compound"]])
+compound_df = pd.DataFrame(compound_encoded, columns=encoder.get_feature_names_out(["Compound"]))
 
-preprocessor = ColumnTransformer(
-    transformers=[
-        ("cat", OneHotEncoder(handle_unknown='ignore'), categorical_features),
-        ("num", "passthrough", numeric_features)
-    ]
-)
+X_final = pd.concat([
+    X.drop(columns=["Compound"]).reset_index(drop=True),
+    compound_df.reset_index(drop=True)
+], axis=1)
 
-pipeline = Pipeline(steps=[
-    ("preprocessor", preprocessor),
-    ("regressor", XGBRegressor())
-])
+joblib.dump(encoder, "models/compound_encoder.pkl")
 
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+dtrain = xgb.DMatrix(X_final, label=y)
 
-pipeline.fit(X_train, y_train)
-print("Model score:", pipeline.score(X_test, y_test))
+params = {
+    "tree_method": "hist",
+    "device": "cuda",
+    "objective": "reg:squarederror"
+}
+model = xgb.train(params, dtrain, num_boost_round=100)
 
-joblib.dump(pipeline, "models/lap_time_model_v2.pkl")
+model.save_model("models/lap_time_gpu_model.json")
+print("Model trained and saved with GPU support.")

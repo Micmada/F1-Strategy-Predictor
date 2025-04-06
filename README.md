@@ -1,97 +1,93 @@
 
-# F1 Strategy Predictor
+# F1 Strategy Predictor (GPU-Accelerated)
 
-This project aims to predict and compare Formula 1 race strategies using historical data. The core functionality includes loading race data, training a machine learning model to predict lap times, simulating races with different strategies, and running Monte Carlo simulations to evaluate the performance of each strategy.
+This project predicts and compares Formula 1 race strategies using historical data, machine learning, and Monte Carlo simulation. It uses **GPU-accelerated XGBoost** for fast training and inference. The core functionality includes:
+
+- Collecting race data via FastF1
+- Training a GPU-accelerated model to predict lap times
+- Simulating races with tyre strategies
+- Running Monte Carlo simulations to find the optimal strategy
+
+---
 
 ## Project Structure
 
 ```
-f1-strategy-predicter/
+f1-strategy-predictor/
 ├── data/
 │   └── collect_data.py
 ├── models/
-│   └── train_lap_time_model.py
+│   ├── train_lap_time_model.py
+│   └── compound_encoder.pkl
 ├── simulation/
-│   ├── monte_carlo.py
-│   └── race_simulator.py
+│   ├── race_simulator.py
+│   └── monte_carlo.py
 ├── main.py
-└── requirements.txt
+├── requirements.txt
+└── README.md
 ```
+
+---
 
 ## Components
 
 ### 1. **Data Collection (`data/collect_data.py`)**
-
-This script is responsible for collecting race data from FastF1 and saving the relevant tyre information into a CSV file. The function `load_race_data()` fetches data for a specified year, Grand Prix (GP), and session type. The data includes information about the lap number, tyre compound, tyre life, and lap time.
+Fetches and stores lap-level data (tyre, compound, stint) using FastF1. Data is saved as CSV for training.
 
 ### 2. **Model Training (`models/train_lap_time_model.py`)**
-
-This script processes the collected data and trains a machine learning model using XGBoost to predict lap times based on tyre life, compound, and lap number. The trained model is saved as `lap_time_model_v2.pkl` and can be used for race simulations.
+Trains an **XGBoost regressor on GPU** using lap number, tyre life, and compound (one-hot encoded). 
 
 ### 3. **Race Simulation (`simulation/race_simulator.py`)**
-
-The race simulator utilizes the trained model to simulate race laps and predict lap times for different strategies. A strategy consists of different tyre compounds and stint lengths. The function `simulate_race()` calculates the total time for a given strategy on a specific track, accounting for pit stops and lap times.
+Simulates a full race based on a given tyre strategy using batched GPU-based predictions for fast lap time estimation.
 
 ### 4. **Monte Carlo Simulation (`simulation/monte_carlo.py`)**
+Simulates 100s of races per strategy using `simulate_race()`. Reports average time + standard deviation to rank strategies.
 
-This script runs Monte Carlo simulations for different race strategies. By simulating a race multiple times (default is 500), it computes the average race time and standard deviation for each strategy. This helps identify which strategy might provide the best performance.
+### 5. **Main Entry (`main.py`)**
+Runs the full pipeline: evaluates multiple strategies and identifies the best one using Monte Carlo stats.
 
-### 5. **Main Script (`main.py`)**
-
-The main script runs the Monte Carlo simulations with a predefined set of strategies, then sorts and prints the strategies based on average race time. It also prints the best-performing strategy.
+---
 
 ## Requirements
-
-The project requires the following Python libraries:
-
-- pandas
-- numpy
-- scikit-learn
-- xgboost
-- joblib
-
-You can install the required dependencies using `pip`:
 
 ```bash
 pip install -r requirements.txt
 ```
 
+Dependencies:
+- pandas
+- numpy
+- scikit-learn
+- xgboost >= 1.7 (GPU support)
+- joblib
+- fastf1 (for data collection)
+
+---
+
 ## Usage
 
-### 1. **Collect Race Data**
-
-To collect data for a specific Grand Prix and year, run:
-
+### Step 1: Collect race data
 ```bash
 python data/collect_data.py
 ```
 
-This will save the data as `data/tyre_data_<GP>_<year>.csv`.
-
-### 2. **Train the Model**
-
-To train the lap time prediction model, run:
-
+### Step 2: Train the GPU model
 ```bash
 python models/train_lap_time_model.py
 ```
 
-This will train the model and save it as `models/lap_time_model_v2.pkl`.
-
-### 3. **Run Race Simulation**
-
-To simulate a race with different strategies and track their performance, run:
-
+### Step 3: Run strategy simulation + Monte Carlo
 ```bash
 python main.py
 ```
 
-This will execute the Monte Carlo simulations, comparing the performance of various strategies and printing the results.
+---
 
 ## Example Output
 
 ```bash
-Running Strategy Comparison...
+Running Monte Carlo Strategy Comparison (GPU)...
+
 Strategy: [('SOFT', 12), ('MEDIUM', 20), ('HARD', 20)]
 Avg Time: 3452.85s ± 15.32
 
@@ -102,7 +98,19 @@ Best Strategy:
 [('MEDIUM', 26), ('HARD', 26)] with avg time 3435.92 seconds
 ```
 
+---
+
 ## Notes
 
-- The simulation is currently configured for the Silverstone track, with 52 laps and a pit stop penalty of 20 seconds.
-- The Monte Carlo simulation defaults to 500 runs but can be adjusted by passing a `runs` parameter to the `run_monte_carlo()` function.
+- GPU prediction is batched for speed via `xgboost.DMatrix`
+- Model expects compound names in uppercase: `SOFT`, `MEDIUM`, `HARD`
+- You can adjust number of Monte Carlo runs in `main.py`
+- This setup is optimized for **Silverstone (52 laps)** by default
+
+---
+
+## 🏁 Future Ideas
+
+- Add Streamlit or CLI interface
+- Add rain, safety cars, and fuel weight simulation
+- Visualize lap-by-lap degradation curves

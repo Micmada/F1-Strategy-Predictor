@@ -5,7 +5,6 @@ def run_monte_carlo(strategies, runs=500):
     results = []
 
     for strat in strategies:
-        print(strat)
         times = []
         for _ in range(runs):
             total_time, laps = simulate_race(strat)

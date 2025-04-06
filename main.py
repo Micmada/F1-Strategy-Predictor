@@ -9,7 +9,7 @@ strategies = [
 ]
 
 if __name__ == "__main__":
-    print("Running Strategy Comparison...")
+    print("Running Monte Carlo Strategy Comparison (GPU)...")
     results = run_monte_carlo(strategies, runs=500)
 
     results.sort(key=lambda x: x["average_time"])
