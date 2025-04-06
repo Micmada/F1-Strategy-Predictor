@@ -18,7 +18,6 @@ f1-strategy-predictor/
 │   └── collect_data.py
 ├── models/
 │   ├── train_lap_time_model.py
-│   └── compound_encoder.pkl
 ├── simulation/
 │   ├── race_simulator.py
 │   └── monte_carlo.py
@@ -109,7 +108,7 @@ Best Strategy:
 
 ---
 
-## 🏁 Future Ideas
+## Future Ideas
 
 - Add Streamlit or CLI interface
 - Add rain, safety cars, and fuel weight simulation
