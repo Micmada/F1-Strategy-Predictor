@@ -18,7 +18,6 @@ f1-strategy-predictor/
 │   └── collect_data.py
 ├── models/
 │   ├── train_lap_time_model.py
-│   └── compound_encoder.pkl
 ├── simulation/
 │   ├── race_simulator.py
 │   └── monte_carlo.py
