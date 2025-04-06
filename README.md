@@ -108,7 +108,7 @@ Best Strategy:
 
 ---
 
-## 🏁 Future Ideas
+## Future Ideas
 
 - Add Streamlit or CLI interface
 - Add rain, safety cars, and fuel weight simulation
