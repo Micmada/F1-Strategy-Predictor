@@ -1,26 +1,30 @@
+# F1 Strategy Predictor (GPU-Accelerated + Track-Aware)
 
-# F1 Strategy Predictor (GPU-Accelerated)
+This project predicts and compares Formula 1 race strategies using historical data, machine learning, and Monte Carlo simulation. It uses **GPU-accelerated XGBoost** and integrates official F1 rules like tyre usage limits and parc fermé constraints.
 
-This project predicts and compares Formula 1 race strategies using historical data, machine learning, and Monte Carlo simulation. It uses **GPU-accelerated XGBoost** for fast training and inference. The core functionality includes:
-
-- Collecting race data via FastF1
-- Training a GPU-accelerated model to predict lap times
-- Simulating races with tyre strategies
-- Running Monte Carlo simulations to find the optimal strategy
+### 🔥 Features:
+- Track-specific data + model training
+- GPU-based lap time prediction
+- Legal strategy generation (with used tyres + degradation caps)
+- Monte Carlo simulation engine
+- Streamlit UI for interactive analysis
 
 ---
 
-## Project Structure
+## 🗂️ Project Structure
 
 ```
 f1-strategy-predictor/
 ├── data/
-│   └── collect_data.py
+│   └── collect_data.py            # Collects race data from FastF1
 ├── models/
-│   ├── train_lap_time_model.py
+│   └── train_lap_time_model.py    # Trains GPU-accelerated XGBoost model
 ├── simulation/
-│   ├── race_simulator.py
-│   └── monte_carlo.py
+│   ├── race_simulator.py          # Full-lap simulation with degradation + failures
+│   ├── monte_carlo.py             # Monte Carlo wrapper for bulk simulation
+│   └── generate_strategies.py     # Builds legal strategy permutations
+├── ui/
+│   └── app.py                     # Streamlit GUI to run end-to-end system
 ├── main.py
 ├── requirements.txt
 └── README.md
@@ -28,88 +32,96 @@ f1-strategy-predictor/
 
 ---
 
-## Components
+## 🧠 Core Components
 
-### 1. **Data Collection (`data/collect_data.py`)**
-Fetches and stores lap-level data (tyre, compound, stint) using FastF1. Data is saved as CSV for training.
+### 1. 📥 Data Collection (`data/collect_data.py`)
+Collects lap-by-lap data for any track in 2023–2024 using FastF1. Saves as CSV based on track name.
 
-### 2. **Model Training (`models/train_lap_time_model.py`)**
-Trains an **XGBoost regressor on GPU** using lap number, tyre life, and compound (one-hot encoded). 
+### 2. 🧠 Model Training (`models/train_lap_time_model.py`)
+Trains an XGBoost model using:
+- Tyre life
+- Lap number
+- Compound (one-hot)
 
-### 3. **Race Simulation (`simulation/race_simulator.py`)**
-Simulates a full race based on a given tyre strategy using batched GPU-based predictions for fast lap time estimation.
+Per-track models are saved and evaluated with MSE + R² score.
 
-### 4. **Monte Carlo Simulation (`simulation/monte_carlo.py`)**
-Simulates 100s of races per strategy using `simulate_race()`. Reports average time + standard deviation to rank strategies.
+### 3. 🧩 Strategy Generator (`simulation/generate_strategies.py`)
+Generates all **rule-legal** tyre strategies based on:
+- Available compounds
+- Remaining laps per tyre (used vs. new)
+- Max usable life before heavy degradation
 
-### 5. **Main Entry (`main.py`)**
-Runs the full pipeline: evaluates multiple strategies and identifies the best one using Monte Carlo stats.
+Strategies respect F1 rules like:
+- Minimum 1 pit stop
+- At least 2 dry compounds
+- Parc fermé tyre usage
+
+### 4. 🏎️ Race Simulator (`simulation/race_simulator.py`)
+Simulates each lap using:
+- ML-predicted lap time
+- Degradation curve
+- Tyre burst chance past thresholds
+
+### 5. 🎲 Monte Carlo (`simulation/monte_carlo.py`)
+Simulates 100s of races per strategy to estimate:
+- Avg. race time
+- Std deviation
+- DNF risks
+
+### 6. 🖥️ Web App (`ui/app.py`)
+Streamlit UI lets you:
+- Select a track
+- Input used tyres
+- Run full pipeline
+- Visualize the top 3 strategies
 
 ---
 
-## Requirements
+## ✅ Setup
 
+Install Python dependencies:
 ```bash
 pip install -r requirements.txt
 ```
 
-Dependencies:
-- pandas
-- numpy
-- scikit-learn
-- xgboost >= 1.7 (GPU support)
-- joblib
-- fastf1 (for data collection)
+---
+
+## 🚀 Usage
+
+### Step 1: Launch the Streamlit UI
+```bash
+streamlit run ui/app.py
+```
+
+### Inside the app:
+1. Pick a track from the dropdown
+2. Paste your tyre inventory (used laps + compounds)
+3. Click "Run Full Strategy Prediction"
 
 ---
 
-## Usage
+## 📊 Example Output (Console)
 
-### Step 1: Collect race data
-```bash
-python data/collect_data.py
 ```
-
-### Step 2: Train the GPU model
-```bash
-python models/train_lap_time_model.py
-```
-
-### Step 3: Run strategy simulation + Monte Carlo
-```bash
-python main.py
-```
-
----
-
-## Example Output
-
-```bash
-Running Monte Carlo Strategy Comparison (GPU)...
-
-Strategy: [('SOFT', 12), ('MEDIUM', 20), ('HARD', 20)]
-Avg Time: 3452.85s ± 15.32
-
-Strategy: [('MEDIUM', 26), ('HARD', 26)]
-Avg Time: 3435.92s ± 12.43
-
+✅ Generated 12 legal strategies
 Best Strategy:
-[('MEDIUM', 26), ('HARD', 26)] with avg time 3435.92 seconds
+[('MEDIUM', 26, 0), ('HARD', 26, 0)] → 3435.92s ± 12.43
 ```
 
 ---
 
-## Notes
+## 📝 Notes
 
-- GPU prediction is batched for speed via `xgboost.DMatrix`
-- Model expects compound names in uppercase: `SOFT`, `MEDIUM`, `HARD`
-- You can adjust number of Monte Carlo runs in `main.py`
-- This setup is optimized for **Silverstone (52 laps)** by default
+- Simulator penalizes tyre overuse with degradation and DNF risk
+- All models are track-specific (`models/lap_time_model_<track>.json`)
+- `generate_strategies.py` ensures realistic strategies only
+- Monte Carlo runs can be customized in the app
 
 ---
 
-## Future Ideas
+## 🧪 Future Ideas
 
-- Add Streamlit or CLI interface
-- Add rain, safety cars, and fuel weight simulation
-- Visualize lap-by-lap degradation curves
+- Rain + safety car simulation
+- Driver-specific performance modifiers
+- Strategy comparison for qualifying setups
+- Auto-import race weekends from FastF1
