@@ -2,7 +2,7 @@
 
 This project predicts and compares Formula 1 race strategies using historical data, machine learning, and Monte Carlo simulation. It uses **GPU-accelerated XGBoost** and integrates official F1 rules like tyre usage limits and parc fermé constraints.
 
-###Features:
+### Features:
 - Track-specific data + model training
 - GPU-based lap time prediction
 - Legal strategy generation (with used tyres + degradation caps)
@@ -11,7 +11,7 @@ This project predicts and compares Formula 1 race strategies using historical da
 
 ---
 
-##Project Structure
+## Project Structure
 
 ```
 f1-strategy-predictor/
@@ -32,7 +32,7 @@ f1-strategy-predictor/
 
 ---
 
-##Core Components
+## Core Components
 
 ### 1. Data Collection (`data/collect_data.py`)
 Collects lap-by-lap data for any track in 2023–2024 using FastF1. Saves as CSV based on track name.
@@ -90,7 +90,7 @@ pip install -r requirements.txt
 
 ### Step 1: Launch the Streamlit UI
 ```bash
-streamlit run ui/app.py
+py streamlit run ui/app.py
 ```
 
 ### Inside the app:
