@@ -49,4 +49,4 @@ print(f"  - R^2 Score: {r2:.3f}")
 
 model_out = f"models/lap_time_model_{track.lower()}.json"
 model.save_model(model_out)
-print(f"✅ Model for {track.title()} trained and saved: {model_out}")
+print(f"Model for {track.title()} trained and saved: {model_out}")
