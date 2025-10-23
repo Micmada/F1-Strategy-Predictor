@@ -35,7 +35,7 @@ f1-strategy-predictor/
 ## Core Components
 
 ### 1. Data Collection (`data/collect_data.py`)
-Collects lap-by-lap data for any track in 2023–2024 using FastF1. Saves as CSV based on track name.
+Collects lap-by-lap data for any track in 2023-2024 using FastF1. Saves as CSV based on track name.
 
 ### 2. Model Training (`models/train_lap_time_model.py`)
 Trains an XGBoost model using:
