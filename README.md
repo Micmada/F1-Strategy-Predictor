@@ -1,3 +1,18 @@
+---
+description: GPU-accelerated F1 strategy prediction using historical data
+details: >
+  Predicts and compares Formula 1 race strategies with Monte Carlo simulation,
+  track-specific ML models, and a Streamlit UI for interactive analysis. Supports
+  tyre rules, degradation, and legal strategy generation.
+technologies:
+  - python
+  - ai
+  - streamlit
+  - xgboost
+hostedUrl: 
+---
+
+
 # F1 Strategy Predictor (GPU-Accelerated + Track-Aware)
 
 This project predicts and compares Formula 1 race strategies using historical data, machine learning, and Monte Carlo simulation. It uses **GPU-accelerated XGBoost** and integrates official F1 rules like tyre usage limits and parc fermé constraints.
