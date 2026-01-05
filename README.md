@@ -5,8 +5,6 @@ details: >
   track-specific ML models, and a Streamlit UI for interactive analysis. Supports
   tyre rules, degradation, and legal strategy generation.
 technologies:
-  - python
-  - ai
   - streamlit
   - xgboost
 hostedUrl: 
