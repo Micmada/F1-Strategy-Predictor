@@ -1,12 +1,22 @@
 ---
-description: GPU-accelerated F1 strategy prediction using historical data
+description: GPU-accelerated F1 race strategy predictor using machine learning and Monte Carlo simulation
 details: >
-  Predicts and compares Formula 1 race strategies with Monte Carlo simulation,
-  track-specific ML models, and a Streamlit UI for interactive analysis. Supports
-  tyre rules, degradation, and legal strategy generation.
+  An advanced Formula 1 strategy prediction system that uses GPU-accelerated
+  XGBoost models and Monte Carlo simulation to analyze and compare race
+  strategies based on historical data. Features track-specific machine learning
+  models trained on lap-by-lap telemetry from FastF1, legal strategy generation
+  that respects official F1 regulations including tyre usage limits, parc fermé
+  constraints, and minimum pit stop requirements. The system simulates tire
+  degradation curves, predicts lap times based on compound type and tire life,
+  calculates DNF risks from tire failures, and runs hundreds of race simulations
+  per strategy to estimate average race times and variance. Includes an
+  interactive Streamlit dashboard for track selection, used tire inventory input,
+  strategy comparison visualization, and real-time analysis of optimal pit stop
+  windows and compound choices.
 technologies:
-  - streamlit
+  - ai
   - xgboost
+  - streamlit
 hostedUrl: 
 ---
 
