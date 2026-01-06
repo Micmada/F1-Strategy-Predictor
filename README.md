@@ -1,5 +1,5 @@
 ---
-description: Test GPU-accelerated F1 strategy prediction using historical data
+description: GPU-accelerated F1 strategy prediction using historical data
 details: >
   Predicts and compares Formula 1 race strategies with Monte Carlo simulation,
   track-specific ML models, and a Streamlit UI for interactive analysis. Supports
