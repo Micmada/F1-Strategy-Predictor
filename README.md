@@ -7,6 +7,7 @@ details: >
 technologies:
   - streamlit
   - xgboost
+  - test
 hostedUrl: 
 ---
 test
