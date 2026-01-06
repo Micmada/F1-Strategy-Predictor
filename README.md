@@ -10,7 +10,7 @@ technologies:
   - test
 hostedUrl: 
 ---
-test
+
 
 # F1 Strategy Predictor (GPU-Accelerated + Track-Aware)
 
