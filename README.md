@@ -12,7 +12,6 @@ hostedUrl:
 ---
 
 
-
 # F1 Strategy Predictor (GPU-Accelerated + Track-Aware)
 
 This project predicts and compares Formula 1 race strategies using historical data, machine learning, and Monte Carlo simulation. It uses **GPU-accelerated XGBoost** and integrates official F1 rules like tyre usage limits and parc fermé constraints.
